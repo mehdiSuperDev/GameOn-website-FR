@@ -527,3 +527,7 @@ footer {
   }
 }
 
+.inputFormValidation {
+  border: 1px solid green;
+  display: block;
+}
