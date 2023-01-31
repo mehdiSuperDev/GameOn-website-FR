@@ -57,8 +57,15 @@ const errorMessage = {
     required: "Voud devez renseigner une valeur",
     invalidFormat: "Vous devez saisir une valeur numérique"
   },
+  date: {
+    required: "Vous devez renseigner votre date de naissance",
+    impossible1: "Techniquement, vous ne pouvez pas être né avant 1907",
+    impossible2: "Vous devez être né avant aujourd'hui"
+  },
   checkbox: {
     required: "Veuillez sélectionner une option"
+  }, mca: {
+    required: "Vous devez accepter les conditions générales"
   }
 }
 
@@ -66,50 +73,58 @@ const errorMessage = {
 // Identifier le formulaire grace à son nom et le récupérer
 const $form = document.querySelector('form[name="reserve"]');
 
-//Récupérer les différents labels
-
+//Récupérer les différents labels du formulaire
 const $lastName = document.getElementById("last");
 const $name = document.getElementById("first");
 
 const $mail = document.getElementById("email");
 
+const $date = document.getElementById("birthdate");
 
-function validityTextHandler(event) {
-  console.log("event: ")
-  console.log(event);
+const $mca = document.getElementById("checkbox1");
 
-  const $errorDescriptor = event.target.nextElementSibling;
 
-  if (event.target.validity.valid) {
+function checkDate(element) {
+  const $errorDescriptor = element.nextElementSibling;
+
+  $errorDescriptor.style.color = "red";
+
+  //Date de naissance de la doyenne de l'humanité
+  const oldestDate = new Date(1907, 3, 7);
+  const inputDate = new Date(element.value);
+
+  //Si la date est supérieure à la date d'aujourd'hui, on affiche un message d'erreur
+  if (inputDate > new Date()) {
+    $errorDescriptor.textContent = errorMessage.date.impossible2; return;
+  }
+
+  if (inputDate < oldestDate) {
+    $errorDescriptor.textContent = errorMessage.date.impossible1; return;
+  }
+
+  if (element.validity.valid) {
     $errorDescriptor.textContent = "";
-    $errorDescriptor.style.color = "green";
   } else {
     $errorDescriptor.style.color = "red";
-    if (event.target.validity.valueMissing) {
-      $errorDescriptor.textContent = errorMessage.text.required; return;
-    }
-    if (event.target.validity.tooShort) {
-      $errorDescriptor.textContent = errorMessage.text.minLength; return;
+    if (element.validity.valueMissing) {
+      $errorDescriptor.textContent = errorMessage.date.required; return;
     }
   }
 }
 
-function validityEmailHandler(event) {
-  console.log("event.target.valid: ")
-  console.log(event);
 
-  const $errorDescriptor = event.target.nextElementSibling;
+function checkTextInput(element) {
+  const $errorDescriptor = element.nextElementSibling;
 
-  if (validateEmail(event.target.value)) {
+  if (element.validity.valid) {
     $errorDescriptor.textContent = "";
-    $errorDescriptor.style.color = "green";
   } else {
     $errorDescriptor.style.color = "red";
-    if (event.target.validity.valueMissing) {
-      $errorDescriptor.textContent = errorMessage.email.required; return;
+    if (element.validity.valueMissing) {
+      $errorDescriptor.textContent = errorMessage.text.required; return;
     }
-    if (!validateEmail(event.target.value)) {
-      $errorDescriptor.textContent = errorMessage.email.invalidFormat; return;
+    if (element.validity.tooShort) {
+      $errorDescriptor.textContent = errorMessage.text.minLength; return;
     }
   }
 }
@@ -119,20 +134,63 @@ function validateEmail(email) {
   return emailRegex.test(String(email).toLowerCase());
 }
 
-$name.addEventListener('input', validityTextHandler);
-$lastName.addEventListener('input', validityTextHandler);
-$mail.addEventListener('input', validityEmailHandler);
+function checkEmail(element) {
 
+  const $errorDescriptor = element.nextElementSibling;
 
-$form.addEventListener('click', function (event) {
-  event.preventDefault();
-  console.log("invalid: tapped");
+  if (validateEmail(element.value)) {
+    $errorDescriptor.textContent = "";
+  } else {
+    $errorDescriptor.style.color = "red";
+    if (element.validity.valueMissing) {
+      $errorDescriptor.textContent = errorMessage.email.required; return;
+    }
+    if (!validateEmail(element.value)) {
+      $errorDescriptor.textContent = errorMessage.email.invalidFormat; return;
+    }
+  }
+}
 
-  $name.value = "test";
+function checkRadioSelected() {
+  const $radioButtons = document.querySelectorAll('input[type="radio"]');
+  let radioSelected = false;
 
-});
+  $radioButtons.forEach(function (radioButton) {
+    if (radioButton.checked) {
+      radioSelected = true;
+    }
+  });
+
+  const $errorDescriptor = document.querySelector(".radioFormValidation");
+
+  if (radioSelected) {
+    $errorDescriptor.textContent = "";
+  } else {
+    $errorDescriptor.style.color = "red";
+    $errorDescriptor.textContent = errorMessage.checkbox.required;
+  }
+}
+
+function checkCheckbox(element) {
+  const $errorDescriptor = document.querySelector(".mcaFormValidation");
+
+  if (element.checked) {
+    $errorDescriptor.textContent = "";
+  } else {
+    $errorDescriptor.style.color = "red";
+    $errorDescriptor.textContent = errorMessage.mca.required;
+  }
+}
 
 $form.addEventListener('submit', function (event) {
+  console.log("submit: tapped"); 
   event.preventDefault();
-  console.log("submit: tapped");  
+  console.log("submit: <after> tapped"); 
+
+  checkTextInput($lastName);
+  checkTextInput($name);
+  checkEmail($mail);
+  checkDate($date);
+  checkRadioSelected();
+  checkCheckbox($mca);
 });
