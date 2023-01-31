@@ -64,7 +64,7 @@ const errorMessage = {
 
 
 // Identifier le formulaire grace à son nom et le récupérer
-const $form = document.querySelector("form[name='reserve']");
+const $form = document.querySelector('form[name="reserve"]');
 
 //Récupérer les différents labels
 
@@ -124,9 +124,15 @@ $lastName.addEventListener('input', validityTextHandler);
 $mail.addEventListener('input', validityEmailHandler);
 
 
-$form.addEventListener('submit', function (event) {
-  console.log("submit");
+$form.addEventListener('click', function (event) {
   event.preventDefault();
+  console.log("invalid: tapped");
 
-  
+  $name.value = "test";
+
+});
+
+$form.addEventListener('submit', function (event) {
+  event.preventDefault();
+  console.log("submit: tapped");  
 });
