@@ -44,7 +44,7 @@ $crossButton.addEventListener('click', function () {
 
 //Objet qui sert à stocker les messages d'erreurs selon le type de l'input
 
-var errorMessage = {
+const errorMessage = {
   text: {
     required: "Ce champ est obligatoire",
     minLength: "Ce champ doit contenir au moins 2 caractères"
@@ -69,92 +69,64 @@ const $form = document.querySelector("form[name='reserve']");
 //Récupérer les différents labels
 
 const $lastName = document.getElementById("last");
+const $name = document.getElementById("first");
+
 const $mail = document.getElementById("email");
 
+
 function validityTextHandler(event) {
-  event.preventDefault();
+  console.log("event: ")
+  console.log(event);
 
-  // recuperer l'element d'apres et inserer le message d'erreur
-  var inputFormValidation = event.target.nextElementSibling;
+  const $errorDescriptor = event.target.nextElementSibling;
 
-  console.log(`inputFormValidation: ${inputFormValidation}`);
-
-  if (event.target.validity.valueMissing) {
-    inputFormValidation.textContent = errorMessage.text.required;
-    inputFormValidation.style.display = "block";
-    inputFormValidation.style.color = "red";
-  } else if (event.target.validity.tooShort) {
-    inputFormValidation.textContent = errorMessage.text.minLength;
-    inputFormValidation.style.display = "block";
-    inputFormValidation.style.color = "red";
+  if (event.target.validity.valid) {
+    $errorDescriptor.textContent = "";
+    $errorDescriptor.style.color = "green";
+  } else {
+    $errorDescriptor.style.color = "red";
+    if (event.target.validity.valueMissing) {
+      $errorDescriptor.textContent = errorMessage.text.required; return;
+    }
+    if (event.target.validity.tooShort) {
+      $errorDescriptor.textContent = errorMessage.text.minLength; return;
+    }
   }
 }
 
-const $name = document.getElementById("first");
-$name.addEventListener('invalid', validityTextHandler);
+function validityEmailHandler(event) {
+  console.log("event.target.valid: ")
+  console.log(event);
 
+  const $errorDescriptor = event.target.nextElementSibling;
 
-$lastName.addEventListener('invalid', validityTextHandler);
+  if (validateEmail(event.target.value)) {
+    $errorDescriptor.textContent = "";
+    $errorDescriptor.style.color = "green";
+  } else {
+    $errorDescriptor.style.color = "red";
+    if (event.target.validity.valueMissing) {
+      $errorDescriptor.textContent = errorMessage.email.required; return;
+    }
+    if (!validateEmail(event.target.value)) {
+      $errorDescriptor.textContent = errorMessage.email.invalidFormat; return;
+    }
+  }
+}
 
+function validateEmail(email) {
+  const emailRegex = new RegExp(/^[A-Za-z0-9_!#$%&'*+\/=?`{|}~^.-]+@[A-Za-z0-9.-]+$/, "gm");
+  return emailRegex.test(String(email).toLowerCase());
+}
 
-// Attacher le handler qui vérifie le nombre de caractère
-// dans l'input aux différents labels concernés
-// $name.addEventListener('input', inputTextHandler);
-// $lastName.addEventListener('input', inputTextHandler);
+$name.addEventListener('input', validityTextHandler);
+$lastName.addEventListener('input', validityTextHandler);
+$mail.addEventListener('input', validityEmailHandler);
 
-// function inputTextHandler(event) {
-//   if (event.target.value < 2) {
-//     console.log(errorMessage.text.minLength);
-//   } else {
-//     console.log("");
-//   }
-//   console.log(event.target.value);
-// }
-
-
-// $form.addEventListener('submit', function(event) {
-//     event.preventDefault();
-//     console.log("submit");
-//     // Vérifier si le nom ne comporte pas moins de 2 caractères et n'est pas vide
-//     if ($name.value.length < 2 || $name.value === "") {
-//       console.log("error name");
-
-//       //recuper l'élement p adjacent au label
-//       const $errorName = $name.nextElementSibling;
-//       //afficher le message d'erreur
-//       $errorName.textContent = errorMessage.text.minLength;
-//       // rendre visible le message d'erreur
-//       $errorName.style.display = "block";
-//     }
-// });
 
 $form.addEventListener('submit', function (event) {
   console.log("submit");
   event.preventDefault();
 
-  // boucle sur $name et $lastName
-  // for (text in [$name, $lastName]) {
-  //   // Vérifier si le nom ne comporte pas moins de 2 caractères et n'est pas vide
-  //   if (text.value.length < 2 || text.value === "") {
-  //     console.log("error name");
-
-  //     //recuper l'élement p adjacent au label
-  //     const $errorName = text.nextElementSibling;
-  //     //afficher le message d'erreur
-  //     $errorName.textContent = errorMessage.text.minLength;
-  //     // rendre visible le message d'erreur
-  //     $errorName.style.display = "block";
-  //   }
-  // }
-
-
+  
 });
-
-// fonction qui verifie si le champ n'est pas vide et si il comporte au moins 2 caractères
-function checkInputText(input) {
-  if (input.value.length < 2 || input.value === "") {
-    return false;
-  } else {
-    return true;
-  }
-}

@@ -528,6 +528,5 @@ footer {
 }
 
 .inputFormValidation {
-  border: 1px solid green;
-  display: block;
+  font-size: 12px;
 }
