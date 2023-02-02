@@ -533,10 +533,6 @@ footer {
 
 /**/
 
-input:invalid {
-  border: 2px solid rgba(255, 0, 0, 1);
-}
-
-input:valid {
-  border: 2px solid rgba(0, 255, 0, 0);
+.inputFormValidation {
+  color: red;
 }
