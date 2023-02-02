@@ -1,3 +1,8 @@
+function showModalForm() {
+  const modalForm = document.querySelector('.modal-form');
+  modalForm.style.display = 'block';
+}
+
 function editNav() {
   var x = document.getElementById("myTopnav");
   if (x.className === "topnav") {
@@ -18,6 +23,7 @@ modalBtn.forEach((btn) => btn.addEventListener("click", launchModal));
 // launch modal form
 function launchModal() {
   modalbg.style.display = "block";
+  showModalForm();
 }
 
 // Close modal button
@@ -65,8 +71,6 @@ const validateText = text => {
 }
 
 const validateEmail = email => {
-  console.log("email", email);
-
   const validRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
   return validRegex.test(email);
 }
@@ -102,19 +106,60 @@ function hasDefaultParameter(fn) {
   return /=.*?\}/.test(fn.toString());
 }
 
+var formErrors = [];
+
 const validate = (element, validateHandler, errorMessage) => {
   const error = element.nextElementSibling;
   const isValid = hasDefaultParameter(validateHandler) ? validateHandler() : validateHandler(element.value);
-  error.textContent = isValid ? "" : errorMessage.required;
+  if (!isValid) {
+    formErrors.push(errorMessage.required);
+    error.textContent = errorMessage.required;
+  } else {
+    error.textContent = "";
+  }
+}
+
+function submitFormIfValid() {
+  if (formErrors.length === 0) {
+    resetForm();
+    hideModalForm();
+    showSuccessModal();
+    // form.submit();
+  }
 }
 
 form.addEventListener('submit', event => {
   event.preventDefault();
   validate(lastName, validateText, errorMessage.text);
   validate(firstName, validateText, errorMessage.text);
-  validate(email, validateEmail, errorMessage.email);
+  // validate(email, validateEmail, errorMessage.email);
   validate(date, validateDate, errorMessage.date);
   validate(quantity, validateNumber, errorMessage.number);
   validate(radioInput, validateRadio, errorMessage.checkbox);
   validate(mca, validateCheckbox, errorMessage.mca);
+
+  submitFormIfValid();
+  formErrors = [];
 });
+
+function resetForm() {
+  form.reset();
+}
+
+function hideModalForm() {
+  const modalForm = document.querySelector('.modal-form');
+  modalForm.style.display = 'none';
+}
+
+const successModal = document.querySelector('.modal-success');
+
+const successModalButton = document.querySelector('.modal-sucess-submit');
+successModalButton.addEventListener('click', function () {
+  successModal.style.display = 'none';
+  $crossButton.click();
+  // form.submit();
+});
+
+function showSuccessModal() {
+  successModal.style.display = 'block';
+}
