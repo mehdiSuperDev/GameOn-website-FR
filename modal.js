@@ -32,8 +32,7 @@ $crossButton.addEventListener('click', function () {
   modalbg.style.display = 'none';
 });
 
-// Vérification des champs du formulaire
-
+// messages d'erreur associés à différents types de champ de formulaire
 const errorMessage = {
   text: {
     required: "Ce champ ne peut etre vide, et doit comporter au moins 2 caractères"
@@ -55,6 +54,7 @@ const errorMessage = {
   }
 }
 
+// Récupération des différents éléments du formulaire HTML
 const form = document.querySelector('form[name="reserve"]');
 const lastName = document.getElementById("last");
 const firstName = document.getElementById("first");
@@ -66,27 +66,71 @@ const radioOptions = document.querySelectorAll('input[type="radio"]');
 const mca = document.getElementById("checkbox1").nextElementSibling;
 const checkboxs = document.querySelectorAll('input[type="checkbox"]');
 
+
+/**
+ * Vérifie si une chaîne de caractères respecte les conditions de validation
+ * @param {string} text - La chaîne de caractères à valider
+ * @returns {boolean} - Vrai si la longueur de `text` est supérieure ou égale à 2, faux sinon
+ */
 const validateText = text => {
   return text.length >= 2;
 }
+
+
+/**
+ * Valide une adresse email.
+ *
+ * @param {string} email - Adresse email à valider.
+ * @return {boolean} - Renvoie `true` si l'adresse email est valide, `false` sinon.
+ */
 
 const validateEmail = email => {
   const validRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
   return validRegex.test(email);
 }
 
+/**
+ * Valide une date.
+ *
+ * @param {string} date - Date à valider.
+ * @return {boolean} - Renvoie `true` si la date est valide, `false` sinon.
+ */
+
 const validateDate = date => {
   const inputDate = new Date(date);
   return inputDate < new Date() && date !== "";
 }
 
+
+/**
+ * Valide une valeur numérique.
+ *
+ * @param {string} number - Valeur numérique à valider.
+ * @return {boolean} - Renvoie `true` si la valeur est numérique, `false` sinon.
+ */
+
 const validateNumber = number => {
   return !isNaN(number) && number !== "";
 }
 
+/**
+ * Valide une option radio.
+ *
+ * @param {NodeList} radioOptions - Liste des options radio.
+ * @return {boolean} - Renvoie `true` si une option est sélectionnée, `false` sinon.
+ */
+
 const validateRadio = (options = radioOptions) => {
   return validateOptions(options);
 }
+
+
+/**
+ * Valide une ou plusieurs options checkbox.
+ *
+ * @param {NodeList} checkboxs - Liste des options checkbox.
+ * @return {boolean} - Renvoie `true` si une option est sélectionnée, `false` sinon.
+ */
 
 const validateCheckbox = (options = checkboxs) => {
   return validateOptions(options);
@@ -102,12 +146,22 @@ function validateOptions(options) {
   return optionSelected;
 }
 
+
+// tableau qui sert à stocker les différentes erreurs sur les inputs
 var formErrors = [];
 
+/**
+ * Valide la valeur d'un élément avec un validateHandler.
+ * @function
+ * @param {function} validateHandler - La fonction de validation à utiliser pour valider la valeur de l'élément.
+ * @param {Element} element - L'élément dont la valeur doit être validée.
+ * @param {Object} errorMessage - L'objet contenant les messages d'erreur associés aux différents types d'éléments.
+ */
 const validate = (validateHandler, element, errorMessage) => {
   const isValid = validateHandler(element.value);
   const errorElement = element.nextElementSibling;
   if (!isValid) {
+    // Erreur ajoutée au formErros pour vérifier dans la fonction submitFormIfValid(), si il y à des erreurs ou non
     formErrors.push(errorMessage.required);
     element.style.borderWidth = "2px";
     errorElement.textContent = errorMessage.required;
@@ -127,15 +181,16 @@ function submitFormIfValid() {
 
 form.addEventListener('submit', event => {
   event.preventDefault();
-  validate(validateText,lastName,errorMessage.text);
-  validate(validateText,firstName,errorMessage.text);
-  validate(validateEmail,email,errorMessage.email);
-  validate(validateDate,date,errorMessage.date);
-  validate(validateNumber,quantity,errorMessage.number);
-  validate(validateRadio,radioInput,errorMessage.checkbox);
-  validate(validateCheckbox,mca,errorMessage.mca);
+  validate(validateText, lastName, errorMessage.text);
+  validate(validateText, firstName, errorMessage.text);
+  validate(validateEmail, email, errorMessage.email);
+  validate(validateDate, date, errorMessage.date);
+  validate(validateNumber, quantity, errorMessage.number);
+  validate(validateRadio, radioInput, errorMessage.checkbox);
+  validate(validateCheckbox, mca, errorMessage.mca);
 
   submitFormIfValid();
+  // On vide notre tableau d'erreurs
   formErrors = [];
 });
 
