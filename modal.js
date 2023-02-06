@@ -49,7 +49,7 @@ const errorMessage = {
   },
   checkbox: {
     required: "Veuillez sélectionner une option"
-  }, 
+  },
   mca: {
     required: "Vous devez accepter les conditions générales"
   }
@@ -102,20 +102,15 @@ function validateOptions(options) {
   return optionSelected;
 }
 
-function hasDefaultParameter(fn) {
-  return /=.*?\}/.test(fn.toString());
-}
-
 var formErrors = [];
 
-const validate = (element, validateHandler, errorMessage) => {
-  const error = element.nextElementSibling;
-  const isValid = hasDefaultParameter(validateHandler) ? validateHandler() : validateHandler(element.value);
+const validate = (validateHandler, value, errorElement, errorMessage) => {
+  const isValid = validateHandler(value);
   if (!isValid) {
     formErrors.push(errorMessage.required);
-    error.textContent = errorMessage.required;
+    errorElement.textContent = errorMessage.required;
   } else {
-    error.textContent = "";
+    errorElement.textContent = "";
   }
 }
 
@@ -124,19 +119,18 @@ function submitFormIfValid() {
     resetForm();
     hideModalForm();
     showSuccessModal();
-    // form.submit();
   }
 }
 
 form.addEventListener('submit', event => {
   event.preventDefault();
-  validate(lastName, validateText, errorMessage.text);
-  validate(firstName, validateText, errorMessage.text);
-  // validate(email, validateEmail, errorMessage.email);
-  validate(date, validateDate, errorMessage.date);
-  validate(quantity, validateNumber, errorMessage.number);
-  validate(radioInput, validateRadio, errorMessage.checkbox);
-  validate(mca, validateCheckbox, errorMessage.mca);
+  validate(validateText, lastName.value, lastName.nextElementSibling, errorMessage.text);
+  validate(validateText, firstName.value, firstName.nextElementSibling, errorMessage.text);
+  validate(validateEmail, email.value, email.nextElementSibling, errorMessage.email);
+  validate(validateDate, date.value, date.nextElementSibling, errorMessage.date);
+  validate(validateNumber, quantity.value, quantity.nextElementSibling, errorMessage.number);
+  validate(validateRadio, radioInput.value, radioInput.nextElementSibling, errorMessage.checkbox);
+  validate(validateCheckbox, mca.value, mca.nextElementSibling, errorMessage.mca);
 
   submitFormIfValid();
   formErrors = [];
@@ -157,7 +151,6 @@ const successModalButton = document.querySelector('.modal-sucess-submit');
 successModalButton.addEventListener('click', function () {
   successModal.style.display = 'none';
   $crossButton.click();
-  // form.submit();
 });
 
 function showSuccessModal() {
