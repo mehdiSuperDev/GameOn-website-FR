@@ -104,13 +104,16 @@ function validateOptions(options) {
 
 var formErrors = [];
 
-const validate = (validateHandler, value, errorElement, errorMessage) => {
-  const isValid = validateHandler(value);
+const validate = (validateHandler, element, errorMessage) => {
+  const isValid = validateHandler(element.value);
+  const errorElement = element.nextElementSibling;
   if (!isValid) {
     formErrors.push(errorMessage.required);
+    element.style.borderWidth = "2px";
     errorElement.textContent = errorMessage.required;
   } else {
     errorElement.textContent = "";
+    element.style.borderWidth = "0px";
   }
 }
 
@@ -124,13 +127,13 @@ function submitFormIfValid() {
 
 form.addEventListener('submit', event => {
   event.preventDefault();
-  validate(validateText, lastName.value, lastName.nextElementSibling, errorMessage.text);
-  validate(validateText, firstName.value, firstName.nextElementSibling, errorMessage.text);
-  validate(validateEmail, email.value, email.nextElementSibling, errorMessage.email);
-  validate(validateDate, date.value, date.nextElementSibling, errorMessage.date);
-  validate(validateNumber, quantity.value, quantity.nextElementSibling, errorMessage.number);
-  validate(validateRadio, radioInput.value, radioInput.nextElementSibling, errorMessage.checkbox);
-  validate(validateCheckbox, mca.value, mca.nextElementSibling, errorMessage.mca);
+  validate(validateText,lastName,errorMessage.text);
+  validate(validateText,firstName,errorMessage.text);
+  validate(validateEmail,email,errorMessage.email);
+  validate(validateDate,date,errorMessage.date);
+  validate(validateNumber,quantity,errorMessage.number);
+  validate(validateRadio,radioInput,errorMessage.checkbox);
+  validate(validateCheckbox,mca,errorMessage.mca);
 
   submitFormIfValid();
   formErrors = [];
